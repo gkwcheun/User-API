@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import db from "../../models/index";
-// const logger = require("../utils/logger");
+import logger from "../../services/logger";
 const { sequelize, User, Group } = db;
 
 class UserGroupController {
   static async addUserToGroup(req: Request, res: Response, next: NextFunction) {
     const { groupId, userIds } = req.body;
-    // logger.info(
-    //   `addUserToGroup method called with ${groupId} and users (${userIds})`
-    // );
+    logger.info(
+      `addUserToGroup method called with ${groupId} and users (${userIds})`
+    );
     const t = await sequelize.transaction();
     try {
       let users = [];
@@ -35,10 +35,10 @@ class UserGroupController {
         },
         { transaction: t }
       );
-      res.json(result);
+      res.status(200).json(result);
     } catch (err) {
       await t.rollback();
-      //   logger.error(err);
+      logger.error(err);
       res.status(500).json({ error: "Something went wrong..." });
       throw new Error(`unhandledRejection in post request to /usergroups`);
     }

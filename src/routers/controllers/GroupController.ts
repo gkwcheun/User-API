@@ -10,7 +10,7 @@ class GroupController {
     logger.info("GET request to /groups");
     try {
       const groups: GroupAttributes[] = await Group.findAll();
-      res.json(groups);
+      res.status(200).json(groups);
     } catch (err) {
       logger.error(err);
       res.status(500).json({ error: "Something went wrong..." });
@@ -22,7 +22,7 @@ class GroupController {
     logger.info(`POST request to /groups`);
     try {
       const group = await Group.create({ name, permissions });
-      return res.json(group);
+      return res.status(200).json(group);
     } catch (err) {
       logger.error(err);
       res.status(500).json({ error: "Something went wrong..." });
@@ -34,7 +34,7 @@ class GroupController {
     logger.info(`GET request to /groups/${groupID}`);
     try {
       const group = await Group.findOne({ where: { id: groupID } });
-      return res.json(group);
+      return res.status(200).json(group);
     } catch (err) {
       logger.error(err);
       res.status(500).json({ error: "Something went wrong..." });
@@ -49,7 +49,7 @@ class GroupController {
       logger.info(`DELETE request to /groups/${groupID}`);
       const group = await Group.findOne({ where: { id: groupID } });
       await group.destroy();
-      res.json({ message: "Group deleted" });
+      res.status(200).json({ message: "Group deleted" });
     } catch (err) {
       logger.error(err);
       res.status(500).json({ error: "Something went wrong..." });
@@ -67,7 +67,7 @@ class GroupController {
       group.name = name || group.name;
       group.permissions = permissions || group.permissions;
       await group.save();
-      res.json(group);
+      res.status(200).json(group);
     } catch (err) {
       logger.error(err);
       res.status(500).json({ error: "Something went wrong..." });

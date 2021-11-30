@@ -1,6 +1,6 @@
 import db from "../../models/index";
 import { Request, Response, NextFunction } from "express";
-import { UserAttributes } from "../../interfaces/interfaces";
+import { UserAttributes, UserRawInterface } from "../../interfaces/interfaces";
 import logger from "../../services/logger";
 
 const { Sequelize, User } = db;
@@ -10,7 +10,7 @@ class UserController {
     const { loginSubstr, limit } = req.query;
     const { like } = Sequelize.Op;
     try {
-      let users: UserAttributes[];
+      let users: UserAttributes[] = [];
       let options = loginSubstr
         ? limit
           ? {
@@ -29,8 +29,11 @@ class UserController {
               },
             }
         : {};
-      users = await User.findAll(options);
-      return res.json(users);
+      let response: UserRawInterface[] = await User.findAll(options);
+      response.forEach((user) => {
+        users.push(user.dataValues);
+      });
+      res.status(200).json(users);
     } catch (err) {
       res.status(500).json({ error: "Something went wrong..." });
       logger.error(err);
@@ -42,7 +45,7 @@ class UserController {
     logger.info(`GET request to /user/${uuid}`);
     try {
       const user = await User.findOne({ where: { id: uuid } });
-      return res.json(user);
+      res.status(200).json(user.dataValues);
     } catch (err) {
       logger.error(err);
       res.status(500).json({ error: "Something went wrong..." });
@@ -55,7 +58,7 @@ class UserController {
     logger.info("POST request to /user");
     try {
       const user = await User.create({ ...userData });
-      return res.json(user);
+      res.status(200).json(user);
     } catch (err) {
       res.status(500).json({ error: "Something went wrong..." });
       logger.error(err);
@@ -72,7 +75,7 @@ class UserController {
       user.password = password || user.password;
       user.age = age || user.age;
       user.save();
-      return res.json(user);
+      res.status(200).json(user.dataValues);
     } catch (err) {
       logger.error(err);
       res.status(500).json({ error: "Something went wrong..." });
@@ -85,7 +88,7 @@ class UserController {
     try {
       const user = await User.findOne({ where: { id: uuid } });
       await user.destroy();
-      return res.json({ message: "User deleted." });
+      res.status(200).json({ message: "User deleted." });
     } catch (err) {
       logger.error(err);
       res.status(500).json({ error: "Something went wrong." });
