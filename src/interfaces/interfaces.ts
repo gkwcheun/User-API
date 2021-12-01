@@ -5,15 +5,19 @@ export interface UserAttributes {
   age: number;
   isDeleted: boolean;
 }
+export interface UserRawInterface {
+  dataValues: UserAttributes;
+  _prevDataValues: UserAttributes;
+  [key: string]: any;
+}
 
 export interface GroupAttributes {
   id: string;
   name: string;
   permissions: string[];
 }
-
-export interface UserRawInterface {
-  dataValues: UserAttributes;
-  _prevDataValues: UserAttributes;
+export interface GroupRawInterface {
+  dataValues: GroupAttributes;
+  _prevDataValues: GroupAttributes;
   [key: string]: any;
 }

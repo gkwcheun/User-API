@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { GroupAttributes } from "../../interfaces/interfaces";
+import {
+  GroupAttributes,
+  GroupRawInterface,
+} from "../../interfaces/interfaces";
 import db from "../../models";
 import logger from "../../services/logger";
 
@@ -8,9 +11,12 @@ const { Group } = db;
 class GroupController {
   static async getAll(req: Request, res: Response, next: NextFunction) {
     logger.info("GET request to /groups");
+    let groups: GroupAttributes[] = [];
     try {
-      const groups: GroupAttributes[] = await Group.findAll();
+      const groupData: GroupRawInterface[] = await Group.findAll();
+      groupData.forEach((group) => groups.push(group.dataValues));
       res.status(200).json(groups);
+      console.log(groups);
     } catch (err) {
       logger.error(err);
       res.status(500).json({ error: "Something went wrong..." });
@@ -22,7 +28,11 @@ class GroupController {
     logger.info(`POST request to /groups`);
     try {
       const group = await Group.create({ name, permissions });
-      return res.status(200).json(group);
+      console.log(group);
+      res.status(200).json({
+        name: group.dataValues.name,
+        permissions: group.dataValues.permissions,
+      });
     } catch (err) {
       logger.error(err);
       res.status(500).json({ error: "Something went wrong..." });
@@ -34,7 +44,7 @@ class GroupController {
     logger.info(`GET request to /groups/${groupID}`);
     try {
       const group = await Group.findOne({ where: { id: groupID } });
-      return res.status(200).json(group);
+      return res.status(200).json(group.dataValues);
     } catch (err) {
       logger.error(err);
       res.status(500).json({ error: "Something went wrong..." });
@@ -53,6 +63,7 @@ class GroupController {
     } catch (err) {
       logger.error(err);
       res.status(500).json({ error: "Something went wrong..." });
+      res.status(500);
       throw new Error(
         `unhandledRejection in delete request to /groups/${groupID}`
       );
@@ -67,13 +78,23 @@ class GroupController {
       group.name = name || group.name;
       group.permissions = permissions || group.permissions;
       await group.save();
-      res.status(200).json(group);
+      res.status(200).json(group.dataValues);
     } catch (err) {
       logger.error(err);
       res.status(500).json({ error: "Something went wrong..." });
       throw new Error(
         `unhandledRejection in put request to /groups/${groupID}`
       );
+    }
+  }
+  static async getAllGroups() {
+    let groups: GroupAttributes[] = [];
+    try {
+      const groupData: GroupRawInterface[] = await Group.findAll();
+      groupData.forEach((group) => groups.push(group.dataValues));
+      return groups;
+    } catch (err) {
+      throw new Error(`unhandledRejection in getAllGroups helper method`);
     }
   }
 }
