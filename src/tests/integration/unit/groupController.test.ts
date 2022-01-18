@@ -205,9 +205,9 @@ describe("GroupController.deleteGroup tests", () => {
     //     expect(res.json).toBeCalledWith({ message: "Group deleted" });
     //   });
     // }
-    for (let i = 0; i < groups.length; i++) {
+    for (let group of groups) {
       const req = getMockReq({
-        params: { groupID: groups[i]["id"] },
+        params: { groupID: group.id },
       });
       const { res, next } = getMockRes();
       await GroupController.deleteGroup(req, res, next);
