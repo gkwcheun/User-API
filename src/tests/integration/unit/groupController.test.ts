@@ -19,7 +19,7 @@ describe("GroupController.createGroup tests", () => {
         permissions: ["READ", "WRITE", "DELETE", "UPDATE", "UPLOAD_FILES"],
       },
       {
-        name: "EPAMGroup",
+        name: "Group 5",
         permissions: ["READ", "WRITE", "DELETE", "UPDATE", "UPLOAD_FILES"],
       },
       {
@@ -189,22 +189,6 @@ describe("GroupController.deleteGroup tests", () => {
   });
   test("delete all groups", async () => {
     const groups = await GroupController.getAllGroups();
-    // why doesn't this work and the regular loop does?
-    // if (groups.length >= 1) {
-    //   groups.forEach(async (group) => {
-    //     const req = getMockReq({
-    //       params: { groupID: group.id },
-    //     });
-    //     const { res, next } = getMockRes();
-    //     await GroupController.deleteGroup(
-    //       req,
-    //       res,
-    //       next
-    //     );
-    //     expect(res.status).toBeCalledWith(200);
-    //     expect(res.json).toBeCalledWith({ message: "Group deleted" });
-    //   });
-    // }
     for (let group of groups) {
       const req = getMockReq({
         params: { groupID: group.id },
